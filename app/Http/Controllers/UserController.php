@@ -3,19 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\LoginRequest;
+use App\Http\Requests\RegisterRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
-    public function register(Request $request): string
+    public function register(RegisterRequest $request)
     {
-        $incomingFields = $request->validate([
-           'name'=>['required', 'min:2', 'max:10', Rule::unique('users', 'name')],
-           'email'=>['required', 'email', Rule::unique('users', 'email')],
-           'password'=>['required', 'min:8', 'max:25']
-        ]);
+        $incomingFields = $request->validated();
 
         $incomingFields['password'] = bcrypt($incomingFields['password']);
 
@@ -25,12 +23,9 @@ class UserController extends Controller
         return redirect('/');
     }
 
-    public function login(Request $request)
+    public function login(LoginRequest $request)
     {
-        $incomingFields = $request->validate ([
-           'login_name'=>'required',
-            'login_password'=>'required'
-        ]);
+        $incomingFields = $request->validated();
 
         if (auth()->attempt(['name' => $incomingFields['login_name'], 'password' => $incomingFields['login_password']])) {
             $request -> session()->regenerate();
@@ -43,5 +38,4 @@ class UserController extends Controller
         auth()->logout();
         return redirect('/');
     }
-
 }
