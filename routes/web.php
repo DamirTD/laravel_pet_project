@@ -19,10 +19,19 @@ Route::get('/', function () {
     return view('home');
 });
 
-Route::post('/register', [UserController::class, 'register']);
-Route::post('/login', [UserController::class, 'login']);
-Route::post('/logout', [UserController::class, 'logout']);
+Route::post('/register', [UserController::class, 'register'])->name('register');
 
-Route::get('/playstation', [GamingDevicesController::class, 'playstation'])->name('playstation');
-Route::get('/game_pc', [GamingDevicesController::class, 'gamePC'])->name('game_pc');
-Route::get('/pc', [GamingDevicesController::class, 'pc'])->name('pc');
+Route::post('/login', [UserController::class, 'login'])->name('login');
+Route::get('/login', function () {
+    return view('home');
+});
+
+Route::post('/logout', [UserController::class, 'logout'])->name('logout');
+
+
+Route::group(['middleware'=>['auth']], function () {
+    Route::get('/playstation', [GamingDevicesController::class, 'playstation'])->name('playstation');
+    Route::get('/game_pc', [GamingDevicesController::class, 'gamePC'])->name('game_pc');
+    Route::get('/pc', [GamingDevicesController::class, 'pc'])->name('pc');
+});
+
